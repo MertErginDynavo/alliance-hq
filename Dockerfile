@@ -10,19 +10,11 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy source code
+# Copy entire src directory (includes public)
 COPY src/ ./src/
-
-# Copy public directory explicitly
-COPY public/ ./public/
 
 # Copy other necessary files
 COPY healthcheck.js ./
-COPY *.png ./
-COPY *.md ./
-
-# Create uploads directories
-RUN mkdir -p public/uploads/profiles public/uploads/alliances
 
 # Create logs directory
 RUN mkdir -p logs
@@ -30,10 +22,10 @@ RUN mkdir -p logs
 # Debug: List files to verify copy
 RUN echo "=== Checking file structure ===" && \
     ls -la && \
-    echo "=== Checking public directory ===" && \
-    ls -la public/ && \
     echo "=== Checking src directory ===" && \
-    ls -la src/
+    ls -la src/ && \
+    echo "=== Checking src/public directory ===" && \
+    ls -la src/public/
 
 # Set permissions
 RUN chown -R node:node /app
