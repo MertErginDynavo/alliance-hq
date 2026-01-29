@@ -66,10 +66,107 @@ socketHandler(io);
 
 // Ana sayfa - index.html'i serve et
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
+  const fs = require('fs');
+  const indexPath = path.join(__dirname, 'public/index.html');
+  
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    // Fallback - HTML content directly
+    res.send(`
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alliance HQ - Gaming Alliance Communication Platform</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; text-align: center; }
+        .logo { width: 120px; height: 120px; margin: 50px auto; }
+        h1 { font-size: 3rem; margin: 20px 0; }
+        .subtitle { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9; }
+        .buttons { margin: 40px 0; }
+        .btn { display: inline-block; padding: 15px 30px; margin: 10px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 10px; transition: all 0.3s; }
+        .btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 60px 0; }
+        .feature { background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎮</div>
+        <h1>Alliance HQ</h1>
+        <p class="subtitle">Gaming Alliance Communication Platform</p>
+        
+        <div class="buttons">
+            <a href="/demo.html" class="btn">🎮 Demo</a>
+            <a href="/login.html" class="btn">🔐 Giriş</a>
+            <a href="/register.html" class="btn">📝 Kayıt</a>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🌍 Multi-Language</h3>
+                <p>10 dilde otomatik çeviri</p>
+            </div>
+            <div class="feature">
+                <h3>🔒 Private Channels</h3>
+                <p>R4 özel sohbet kanalları</p>
+            </div>
+            <div class="feature">
+                <h3>📊 Alliance Management</h3>
+                <p>İttifak yönetim sistemi</p>
+            </div>
+        </div>
+        
+        <p style="margin-top: 60px; opacity: 0.7;">
+            🚀 Status: <strong>ONLINE</strong> | 
+            🗄️ Database: <strong>CONNECTED</strong> | 
+            🌐 Server: <strong>Render.com</strong>
+        </p>
+    </div>
+</body>
+</html>
+    `);
+  }
 });
 
-// API info endpoint
+// Demo sayfası
+app.get('/demo.html', (req, res) => {
+  const fs = require('fs');
+  const demoPath = path.join(__dirname, 'public/demo.html');
+  
+  if (fs.existsSync(demoPath)) {
+    res.sendFile(demoPath);
+  } else {
+    res.redirect('/');
+  }
+});
+
+// Login sayfası
+app.get('/login.html', (req, res) => {
+  const fs = require('fs');
+  const loginPath = path.join(__dirname, 'public/login.html');
+  
+  if (fs.existsSync(loginPath)) {
+    res.sendFile(loginPath);
+  } else {
+    res.redirect('/');
+  }
+});
+
+// Register sayfası
+app.get('/register.html', (req, res) => {
+  const fs = require('fs');
+  const registerPath = path.join(__dirname, 'public/register.html');
+  
+  if (fs.existsSync(registerPath)) {
+    res.sendFile(registerPath);
+  } else {
+    res.redirect('/');
+  }
+});
 app.get('/api', (req, res) => {
   res.json({
     message: '🎮 Alliance HQ - Gaming Alliance Communication API',
