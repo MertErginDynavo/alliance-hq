@@ -1,0 +1,63 @@
+{
+  "name": "alliance-hq",
+  "version": "1.0.0",
+  "description": "Alliance HQ - Gaming alliance communication platform without language barriers",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest",
+    "build": "echo 'Build completed - Static files ready'",
+    "production": "NODE_ENV=production node src/app.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop alliance-hq",
+    "pm2:restart": "pm2 restart alliance-hq",
+    "pm2:logs": "pm2 logs alliance-hq",
+    "deploy:railway": "railway login && railway up",
+    "deploy:vercel": "vercel --prod",
+    "deploy:render": "echo 'Push to GitHub to deploy on Render'",
+    "deploy:netlify": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "axios": "^1.5.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.0",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.6.4",
+    "mongodb-memory-server": "^11.0.1",
+    "nodemon": "^3.0.1",
+    "pm2": "^5.3.0"
+  },
+  "keywords": [
+    "alliance",
+    "gaming",
+    "communication",
+    "translation",
+    "discord",
+    "mobile-strategy",
+    "hq",
+    "nodejs",
+    "express",
+    "socket.io",
+    "mongodb"
+  ],
+  "author": "Kiro AI",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/alliance-hq.git"
+  },
+  "homepage": "https://alliance-hq.com"
+}

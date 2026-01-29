@@ -1,0 +1,34 @@
+{
+  "name": "Alliance HQ",
+  "description": "Gaming alliance communication platform without language barriers",
+  "repository": "https://github.com/your-username/alliance-hq",
+  "services": [
+    {
+      "name": "alliance-hq-app",
+      "source": {
+        "repo": "your-username/alliance-hq",
+        "ref": "main"
+      },
+      "variables": {
+        "NODE_ENV": "production",
+        "JWT_SECRET": {
+          "description": "JWT secret key for authentication",
+          "generator": {
+            "type": "secret"
+          }
+        },
+        "MONGODB_URI": "${{MongoDB.DATABASE_URL}}",
+        "CORS_ORIGIN": "https://${{RAILWAY_PUBLIC_DOMAIN}}"
+      }
+    },
+    {
+      "name": "MongoDB",
+      "source": {
+        "image": "mongo:6.0"
+      },
+      "variables": {
+        "MONGO_INITDB_DATABASE": "alliance_hq"
+      }
+    }
+  ]
+}
