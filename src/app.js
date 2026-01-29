@@ -35,102 +35,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Static files - src/public path for deployment platforms
+// Static files - serve from both src/public and root public directories
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, '../public')));
 
-// PNG files fallback - serve SVG versions when PNG files are not found
-app.get('/:filename.png', (req, res) => {
-  const fileName = req.params.filename + '.png';
-  const fs = require('fs');
-  
-  console.log(`PNG request for: ${fileName}`);
-  
-  // First try to serve the actual PNG file from public directory
-  const pngPath = path.join(__dirname, 'public', fileName);
-  
-  if (fs.existsSync(pngPath)) {
-    console.log(`Serving real PNG: ${fileName}`);
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-    res.sendFile(pngPath);
-    return;
-  }
-  
-  // If PNG doesn't exist, serve SVG fallback
-  console.log(`PNG not found, serving SVG fallback for: ${fileName}`);
-  
-  // Logo ve bayrak dosyaları için SVG fallback
-  const fallbackImages = {
-    'logo.png': `<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="120" height="120" rx="8" fill="#000000"/>
-      <text x="60" y="70" font-family="Arial" font-size="48" font-weight="bold" fill="white" text-anchor="middle">AH</text>
-    </svg>`,
-    'türkçe.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="18" fill="#E30A13"/>
-      <circle cx="8" cy="9" r="3" fill="white"/>
-      <circle cx="8" cy="9" r="2" fill="#E30A13"/>
-      <polygon points="11,7 13,9 11,11" fill="white"/>
-    </svg>`,
-    'İngilizce.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="18" fill="#012169"/>
-      <path d="M0 0 L24 0 L24 18 L0 18 Z" fill="#012169"/>
-      <path d="M0 0 L24 18 M24 0 L0 18" stroke="white" stroke-width="2"/>
-      <path d="M12 0 L12 18 M0 9 L24 9" stroke="white" stroke-width="3"/>
-      <path d="M12 0 L12 18 M0 9 L24 9" stroke="#C8102E" stroke-width="2"/>
-    </svg>`,
-    'Espanol.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="18" fill="#AA001B"/>
-      <rect y="4" width="24" height="10" fill="#FFC400"/>
-    </svg>`,
-    'Deutsch.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="6" fill="#000000"/>
-      <rect y="6" width="24" height="6" fill="#DD003D"/>
-      <rect y="12" width="24" height="6" fill="#FFCE00"/>
-    </svg>`,
-    'Çince.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="18" fill="#DE2910"/>
-      <polygon points="6,4 7,6 5,6" fill="#FFDE00"/>
-    </svg>`,
-    'Fransızca.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="8" height="18" fill="#002395"/>
-      <rect x="8" width="8" height="18" fill="white"/>
-      <rect x="16" width="8" height="18" fill="#ED2939"/>
-    </svg>`,
-    'Rusça.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="6" fill="white"/>
-      <rect y="6" width="24" height="6" fill="#0052B4"/>
-      <rect y="12" width="24" height="6" fill="#D32930"/>
-    </svg>`,
-    'Arapça.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="6" fill="#000000"/>
-      <rect y="6" width="24" height="6" fill="white"/>
-      <rect y="12" width="24" height="6" fill="#00723D"/>
-    </svg>`,
-    'Japonca.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="18" fill="white"/>
-      <circle cx="12" cy="9" r="4" fill="#BC002D"/>
-    </svg>`,
-    'Korece.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="24" height="18" fill="white"/>
-      <circle cx="10" cy="9" r="3" fill="#CD212A"/>
-      <circle cx="14" cy="9" r="3" fill="#003478"/>
-    </svg>`,
-    'WLF.png': `<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="60" height="60" rx="8" fill="#1a1a1a"/>
-      <text x="30" y="38" font-family="Arial" font-size="36" font-weight="bold" fill="white" text-anchor="middle">🐺</text>
-    </svg>`
-  };
-  
-  if (fallbackImages[fileName]) {
-    res.setHeader('Content-Type', 'image/svg+xml');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-    res.send(fallbackImages[fileName]);
-  } else {
-    console.log(`No fallback available for: ${fileName}`);
-    res.status(404).send('Image not found');
-  }
-});
+// PNG files are now served by static middleware above
+// No need for custom PNG route since files are in public directory
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
