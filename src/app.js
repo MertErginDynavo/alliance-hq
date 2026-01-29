@@ -40,11 +40,15 @@ app.get('/api/health', (req, res) => {
 });
 
 // Database bağlantısı (optional for demo mode)
-try {
-  connectDatabase();
-} catch (error) {
-  console.log('⚠️ MongoDB not available, continuing without database (demo mode)');
-  console.log('📝 Note: Registration and login will not work without database');
+if (process.env.MONGODB_URI && process.env.MONGODB_URI !== 'undefined') {
+  try {
+    connectDatabase();
+  } catch (error) {
+    console.log('⚠️ MongoDB connection failed, continuing in demo mode');
+  }
+} else {
+  console.log('🎮 Alliance HQ starting in DEMO MODE (no database required)');
+  console.log('📝 All data will be stored in memory for demo purposes');
 }
 
 // Routes
@@ -104,7 +108,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🚀 Alliance HQ Server running on port ${PORT}`);
-  console.log(`🌐 http://localhost:${PORT}`);
-});
+
+// Vercel için export
+module.exports = app;
+
+// Local development için server start
+if (process.env.NODE_ENV !== 'production') {
+  server.listen(PORT, () => {
+    console.log(`🚀 Alliance HQ Server running on port ${PORT}`);
+    console.log(`🌐 http://localhost:${PORT}`);
+  });
+}

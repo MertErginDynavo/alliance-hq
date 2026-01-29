@@ -12,7 +12,8 @@
     "deploy:railway": "railway up",
     "deploy:vercel": "vercel --prod",
     "deploy:render": "echo 'Push to GitHub to deploy on Render'",
-    "deploy:netlify": "netlify deploy --prod"
+    "deploy:netlify": "netlify deploy --prod",
+    "vercel-build": "echo 'Vercel build completed'"
   },
   "dependencies": {
     "axios": "^1.5.0",
