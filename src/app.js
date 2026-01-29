@@ -27,9 +27,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files - src/public path for Railway
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/public', express.static(path.join(__dirname, 'public')));
+// Static files - back to original path for Render
+app.use(express.static(path.join(__dirname, '../public')));
+app.use('/public', express.static(path.join(__dirname, '../public')));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -66,7 +66,7 @@ socketHandler(io);
 
 // Ana sayfa - index.html'i serve et
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // API info endpoint
@@ -108,24 +108,22 @@ app.get('/api/debug', (req, res) => {
 
 // 404 handler - must be after all other routes
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'public/404.html'));
+  res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
 });
 
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).sendFile(path.join(__dirname, 'public/50x.html'));
+  res.status(500).sendFile(path.join(__dirname, '../public/50x.html'));
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-// Vercel için export
+// Render için export
 module.exports = app;
 
-// Local development için server start
-if (process.env.NODE_ENV !== 'production') {
-  server.listen(PORT, () => {
-    console.log(`🚀 Alliance HQ Server running on port ${PORT}`);
-    console.log(`🌐 http://localhost:${PORT}`);
-  });
-}
+// Server start
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Alliance HQ Server running on port ${PORT}`);
+  console.log(`🌐 Server ready for connections`);
+});

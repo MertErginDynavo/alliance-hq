@@ -5,21 +5,10 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
-    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: JWT_SECRET
-        generateValue: true
+        value: alliance-hq-super-secure-jwt-secret-key-2024-render
       - key: MONGODB_URI
-        fromDatabase:
-          name: alliance-hq-db
-          property: connectionString
-
-databases:
-  - name: alliance-hq-db
-    plan: free
-    databaseName: alliance_hq
-    user: alliance_user
+        value: mongodb+srv://mertergin:Abana1905%2E@alliancehq.bvbpnkz.mongodb.net/alliance-hq
