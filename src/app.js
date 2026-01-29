@@ -42,8 +42,23 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 // PNG files fallback - serve SVG versions when PNG files are not found
 app.get('/:filename.png', (req, res) => {
   const fileName = req.params.filename + '.png';
+  const fs = require('fs');
   
   console.log(`PNG request for: ${fileName}`);
+  
+  // First try to serve the actual PNG file from public directory
+  const pngPath = path.join(__dirname, 'public', fileName);
+  
+  if (fs.existsSync(pngPath)) {
+    console.log(`Serving real PNG: ${fileName}`);
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+    res.sendFile(pngPath);
+    return;
+  }
+  
+  // If PNG doesn't exist, serve SVG fallback
+  console.log(`PNG not found, serving SVG fallback for: ${fileName}`);
   
   // Logo ve bayrak dosyaları için SVG fallback
   const fallbackImages = {
@@ -112,7 +127,7 @@ app.get('/:filename.png', (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
     res.send(fallbackImages[fileName]);
   } else {
-    console.log(`PNG not found: ${fileName}`);
+    console.log(`No fallback available for: ${fileName}`);
     res.status(404).send('Image not found');
   }
 });
