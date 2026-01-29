@@ -66,19 +66,262 @@ socketHandler(io);
 
 // Ana sayfa - index.html'i serve et
 app.get('/', (req, res) => {
-  const fs = require('fs');
-  let indexPath = path.join(__dirname, 'public/index.html');
-  
-  // Önce src/public'te ara
-  if (!fs.existsSync(indexPath)) {
-    indexPath = path.join(__dirname, '../public/index.html');
-  }
-  
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).send('Index page not found');
-  }
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alliance HQ - Gaming Alliance Communication Platform</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #000000;
+            --primary-white: #ffffff;
+            --dark-gray: #1a1a1a;
+            --text-primary: #000000;
+            --text-secondary: #4b5563;
+            --text-light: #9ca3af;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--primary-white);
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        .nav-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+        }
+        .nav-logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        .btn-primary {
+            background: var(--primary-black);
+            color: var(--primary-white);
+        }
+        .btn-primary:hover {
+            background: var(--dark-gray);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        .btn-secondary:hover {
+            background: var(--primary-black);
+            color: var(--primary-white);
+        }
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 2rem 80px;
+        }
+        .hero-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 3rem;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-hero {
+            padding: 16px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .features {
+            padding: 100px 2rem;
+            background: #f8f9fa;
+        }
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .features h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .footer {
+            background: var(--primary-black);
+            color: var(--primary-white);
+            padding: 60px 2rem 30px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero-actions { flex-direction: column; align-items: center; }
+            .btn-hero { width: 100%; max-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <a href="#" class="nav-logo">
+                <img src="logo.png" alt="Alliance HQ" onerror="this.style.display='none'">
+                <span class="nav-logo-text">Alliance HQ</span>
+            </a>
+            <div>
+                <a href="/demo.html" class="btn btn-secondary">🎮 Demo</a>
+                <a href="/login.html" class="btn btn-primary">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-container">
+            <img src="logo.png" alt="Alliance HQ Logo" class="hero-logo" onerror="this.style.display='none'">
+            <h1>Alliance HQ</h1>
+            <p class="hero-subtitle">Gaming Alliance Communication Platform</p>
+            <p class="hero-description">
+                Break down language barriers in your gaming alliance. Real-time auto-translation, private alliance spaces, and smart communication tools designed for mobile strategy games.
+            </p>
+            
+            <div class="hero-actions">
+                <a href="/demo.html" class="btn btn-primary btn-hero">🎮 Try Demo</a>
+                <a href="/register.html" class="btn btn-secondary btn-hero">📝 Register</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="features-container">
+            <h2>Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3 class="feature-title">10 Languages</h3>
+                    <p>Real-time auto-translation for seamless global communication</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Private Channels</h3>
+                    <p>Secure R4 channels with access code protection</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Mobile Optimized</h3>
+                    <p>Perfect for mobile strategy games and on-the-go management</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 Alliance HQ. Gaming Alliance Communication Platform.</p>
+        <p style="margin-top: 1rem; opacity: 0.7;">
+            🚀 Status: <strong>ONLINE</strong> | 
+            🗄️ Database: <strong>CONNECTED</strong> | 
+            🌐 Server: <strong>Render.com</strong>
+        </p>
+    </footer>
+</body>
+</html>`);
 });
 
 // Demo sayfası
