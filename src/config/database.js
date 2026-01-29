@@ -9,13 +9,12 @@ async function connectDatabase() {
       throw new Error('MONGODB_URI environment variable not set');
     }
     
-    // MongoDB bağlantı ayarları
+    // MongoDB bağlantı ayarları (Mongoose 7+ uyumlu)
     const options = {
       serverSelectionTimeoutMS: 10000, // 10 saniye timeout
       socketTimeoutMS: 45000,
-      bufferMaxEntries: 0,
-      useNewUrlParser: true,
-      useUnifiedTopology: true
+      maxPoolSize: 10,
+      minPoolSize: 1
     };
     
     await mongoose.connect(mongoUri, options);
