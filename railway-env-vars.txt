@@ -1,0 +1,11 @@
+Railway Environment Variables:
+
+NODE_ENV=production
+JWT_SECRET=alliance-hq-super-secure-jwt-secret-key-2024
+MONGODB_URI=${{MongoDB.DATABASE_URL}}
+CORS_ORIGIN=https://${{RAILWAY_PUBLIC_DOMAIN}}
+SOCKET_CORS_ORIGIN=https://${{RAILWAY_PUBLIC_DOMAIN}}
+MAX_FILE_SIZE=5242880
+UPLOAD_PATH=./public/uploads
+
+Not: MongoDB service eklendikten sonra ${{MongoDB.DATABASE_URL}} otomatik olarak doldurulacak.

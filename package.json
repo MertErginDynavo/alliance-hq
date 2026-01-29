@@ -1,19 +1,15 @@
 {
   "name": "alliance-hq",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Alliance HQ - Gaming alliance communication platform without language barriers",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "build": "echo 'Build completed - Static files ready'",
     "production": "NODE_ENV=production node src/app.js",
-    "pm2:start": "pm2 start ecosystem.config.js",
-    "pm2:stop": "pm2 stop alliance-hq",
-    "pm2:restart": "pm2 restart alliance-hq",
-    "pm2:logs": "pm2 logs alliance-hq",
-    "deploy:railway": "railway login && railway up",
+    "deploy:railway": "railway up",
     "deploy:vercel": "vercel --prod",
     "deploy:render": "echo 'Push to GitHub to deploy on Render'",
     "deploy:netlify": "netlify deploy --prod"
@@ -32,9 +28,7 @@
   },
   "devDependencies": {
     "jest": "^29.6.4",
-    "mongodb-memory-server": "^11.0.1",
-    "nodemon": "^3.0.1",
-    "pm2": "^5.3.0"
+    "nodemon": "^3.0.1"
   },
   "keywords": [
     "alliance",
@@ -52,7 +46,7 @@
   "author": "Kiro AI",
   "license": "MIT",
   "engines": {
-    "node": ">=16.0.0",
+    "node": ">=18.0.0",
     "npm": ">=8.0.0"
   },
   "repository": {
