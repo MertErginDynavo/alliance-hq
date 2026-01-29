@@ -27,9 +27,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files - back to original path for Render
-app.use(express.static(path.join(__dirname, '../public')));
-app.use('/public', express.static(path.join(__dirname, '../public')));
+// Static files - src/public path for deployment platforms
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -66,7 +66,7 @@ socketHandler(io);
 
 // Ana sayfa - index.html'i serve et
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 // API info endpoint
@@ -88,18 +88,18 @@ app.get('/api', (req, res) => {
 app.get('/api/debug', (req, res) => {
   const fs = require('fs');
   try {
-    const rootFiles = fs.readdirSync('/app');
-    const srcFiles = fs.existsSync('/app/src') ? fs.readdirSync('/app/src') : ['src directory not found'];
-    const publicFiles = fs.existsSync('/app/src/public') ? fs.readdirSync('/app/src/public') : ['src/public directory not found'];
+    const rootFiles = fs.readdirSync(process.cwd());
+    const srcFiles = fs.existsSync(path.join(__dirname)) ? fs.readdirSync(path.join(__dirname)) : ['src directory not found'];
+    const publicFiles = fs.existsSync(path.join(__dirname, 'public')) ? fs.readdirSync(path.join(__dirname, 'public')) : ['src/public directory not found'];
     
     res.json({
       workingDirectory: process.cwd(),
+      srcDirectory: __dirname,
       rootFiles: rootFiles,
       srcFiles: srcFiles,
       publicFiles: publicFiles,
       publicPath: path.join(__dirname, 'public'),
-      indexExists: fs.existsSync(path.join(__dirname, 'public/index.html')),
-      indexExistsAbsolute: fs.existsSync('/app/src/public/index.html')
+      indexExists: fs.existsSync(path.join(__dirname, 'public/index.html'))
     });
   } catch (error) {
     res.json({ error: error.message });
@@ -108,13 +108,13 @@ app.get('/api/debug', (req, res) => {
 
 // 404 handler - must be after all other routes
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
+  res.status(404).sendFile(path.join(__dirname, 'public/404.html'));
 });
 
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).sendFile(path.join(__dirname, '../public/50x.html'));
+  res.status(500).sendFile(path.join(__dirname, 'public/50x.html'));
 });
 
 const PORT = process.env.PORT || 10000;
