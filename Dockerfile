@@ -10,8 +10,10 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy application code
-COPY . .
+# Copy application code and public files
+COPY src/ ./src/
+COPY public/ ./public/
+COPY healthcheck.js ./
 
 # Create uploads directory
 RUN mkdir -p public/uploads/profiles public/uploads/alliances
