@@ -80,6 +80,10 @@ app.get('/', (req, res) => {
             --primary-black: #000000;
             --primary-white: #ffffff;
             --dark-gray: #1a1a1a;
+            --medium-gray: #2d2d2d;
+            --light-gray: #f8f9fa;
+            --accent-blue: #1e40af;
+            --metallic-gray: #6b7280;
             --text-primary: #000000;
             --text-secondary: #4b5563;
             --text-light: #9ca3af;
@@ -90,6 +94,7 @@ app.get('/', (req, res) => {
             line-height: 1.6;
             color: var(--text-primary);
             background: var(--primary-white);
+            overflow-x: hidden;
         }
         .header {
             position: fixed;
@@ -100,7 +105,7 @@ app.get('/', (req, res) => {
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             z-index: 1000;
-            padding: 1rem 2rem;
+            transition: all 0.3s ease;
         }
         .nav-container {
             max-width: 1400px;
@@ -108,6 +113,7 @@ app.get('/', (req, res) => {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1rem 2rem;
         }
         .nav-logo {
             display: flex;
@@ -126,6 +132,113 @@ app.get('/', (req, res) => {
             font-weight: 800;
             letter-spacing: -0.02em;
         }
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+        .nav-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            letter-spacing: -0.01em;
+        }
+        .nav-menu a:hover {
+            color: var(--text-primary);
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .language-selector {
+            position: relative;
+            z-index: 1001;
+        }
+        .custom-select {
+            position: relative;
+            display: inline-block;
+            min-width: 100px;
+        }
+        .select-selected {
+            background: var(--primary-white);
+            color: var(--text-secondary);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            padding: 8px 30px 8px 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .select-selected:hover {
+            border-color: var(--accent-blue);
+        }
+        .select-selected::after {
+            content: '▼';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 0.7rem;
+            transition: transform 0.3s ease;
+        }
+        .custom-select.active .select-selected::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+        .select-items {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--primary-white);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        .custom-select.active .select-items {
+            display: block;
+        }
+        .select-items div {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .select-items div:last-child {
+            border-bottom: none;
+        }
+        .select-items div:hover {
+            background: var(--light-gray);
+            color: var(--text-primary);
+        }
+        .flag-icon {
+            width: 18px;
+            height: 14px;
+            object-fit: cover;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
         .btn {
             display: inline-flex;
             align-items: center;
@@ -139,7 +252,7 @@ app.get('/', (req, res) => {
             text-decoration: none;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 0 0.5rem;
+            letter-spacing: -0.01em;
         }
         .btn-primary {
             background: var(--primary-black);
@@ -164,6 +277,8 @@ app.get('/', (req, res) => {
             align-items: center;
             justify-content: center;
             text-align: center;
+            background: var(--primary-white);
+            position: relative;
             padding: 120px 2rem 80px;
         }
         .hero-container {
@@ -184,12 +299,14 @@ app.get('/', (req, res) => {
             line-height: 1.1;
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
+            color: var(--text-primary);
         }
         .hero-subtitle {
             font-size: 1.5rem;
             font-weight: 500;
             color: var(--text-secondary);
             margin-bottom: 2rem;
+            letter-spacing: -0.01em;
         }
         .hero-description {
             font-size: 1.1rem;
@@ -211,51 +328,206 @@ app.get('/', (req, res) => {
             font-size: 1rem;
             font-weight: 600;
         }
-        .features {
+        .section {
             padding: 100px 2rem;
-            background: #f8f9fa;
         }
-        .features-container {
-            max-width: 1200px;
+        .section-container {
+            max-width: 1400px;
             margin: 0 auto;
-            text-align: center;
         }
-        .features h2 {
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        .section-title {
             font-family: 'Playfair Display', serif;
             font-size: 3rem;
             font-weight: 700;
-            margin-bottom: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
         }
         .feature-card {
-            background: white;
-            padding: 2rem;
+            background: var(--primary-white);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
         }
         .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-black);
+            color: var(--primary-white);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1.5rem;
         }
         .feature-title {
             font-size: 1.3rem;
             font-weight: 700;
             margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .stats-section {
+            background: var(--dark-gray);
+            color: var(--primary-white);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+        }
+        .stat-item {
+            padding: 2rem;
+        }
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--primary-white);
+        }
+        .stat-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+        .cta-section {
+            background: var(--light-gray);
+            text-align: center;
+        }
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .cta-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        .cta-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
         }
         .footer {
             background: var(--primary-black);
             color: var(--primary-white);
             padding: 60px 2rem 30px;
+        }
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        .footer-section h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-white);
+        }
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        .footer-section a:hover {
+            color: var(--primary-white);
+        }
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
             text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
         }
         @media (max-width: 768px) {
+            .mobile-menu-toggle { display: block; }
+            .nav-menu { display: none; }
+            .nav-actions .btn { display: none; }
             .hero h1 { font-size: 3rem; }
+            .hero-subtitle { font-size: 1.2rem; }
+            .hero-description { font-size: 1rem; }
             .hero-actions { flex-direction: column; align-items: center; }
             .btn-hero { width: 100%; max-width: 300px; }
+            .section { padding: 60px 1rem; }
+            .section-title { font-size: 2.2rem; }
+            .features-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+            .cta-title { font-size: 2.2rem; }
+        }
+        @media (max-width: 480px) {
+            .nav-container { padding: 1rem; }
+            .hero { padding: 100px 1rem 60px; }
+            .hero h1 { font-size: 2.5rem; }
+            .section { padding: 50px 1rem; }
+            .feature-card { padding: 2rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        .scroll-animate.animate {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -266,60 +538,232 @@ app.get('/', (req, res) => {
                 <img src="logo.png" alt="Alliance HQ" onerror="this.style.display='none'">
                 <span class="nav-logo-text">Alliance HQ</span>
             </a>
-            <div>
+            
+            <ul class="nav-menu">
+                <li><a href="#about">Özellikler</a></li>
+                <li><a href="#services">Diller</a></li>
+                <li><a href="#partnerships">Demo</a></li>
+                <li><a href="#contact">İletişim</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <div class="language-selector">
+                    <div class="custom-select" id="languageSelector" onclick="toggleLanguageSelector()">
+                        <div class="select-selected">
+                            <img src="türkçe.png" alt="TR" class="flag-icon" id="selectedFlag" onerror="this.style.display='none'">
+                            <span id="selectedLang">TR</span>
+                        </div>
+                        <div class="select-items" id="selectItems">
+                            <div onclick="selectLanguage('tr', 'TR', 'türkçe.png')">
+                                <img src="türkçe.png" alt="TR" class="flag-icon" onerror="this.style.display='none'">
+                                <span>Türkçe</span>
+                            </div>
+                            <div onclick="selectLanguage('en', 'EN', 'İngilizce.png')">
+                                <img src="İngilizce.png" alt="EN" class="flag-icon" onerror="this.style.display='none'">
+                                <span>English</span>
+                            </div>
+                            <div onclick="selectLanguage('es', 'ES', 'Espanol.png')">
+                                <img src="Espanol.png" alt="ES" class="flag-icon" onerror="this.style.display='none'">
+                                <span>Español</span>
+                            </div>
+                            <div onclick="selectLanguage('de', 'DE', 'Deutsch.png')">
+                                <img src="Deutsch.png" alt="DE" class="flag-icon" onerror="this.style.display='none'">
+                                <span>Deutsch</span>
+                            </div>
+                            <div onclick="selectLanguage('zh', 'ZH', 'Çince.png')">
+                                <img src="Çince.png" alt="ZH" class="flag-icon" onerror="this.style.display='none'">
+                                <span>中文</span>
+                            </div>
+                            <div onclick="selectLanguage('fr', 'FR', 'Fransızca.png')">
+                                <img src="Fransızca.png" alt="FR" class="flag-icon" onerror="this.style.display='none'">
+                                <span>Français</span>
+                            </div>
+                            <div onclick="selectLanguage('ru', 'RU', 'Rusça.png')">
+                                <img src="Rusça.png" alt="RU" class="flag-icon" onerror="this.style.display='none'">
+                                <span>Русский</span>
+                            </div>
+                            <div onclick="selectLanguage('ar', 'AR', 'Arapça.png')">
+                                <img src="Arapça.png" alt="AR" class="flag-icon" onerror="this.style.display='none'">
+                                <span>العربية</span>
+                            </div>
+                            <div onclick="selectLanguage('ja', 'JA', 'Japonca.png')">
+                                <img src="Japonca.png" alt="JA" class="flag-icon" onerror="this.style.display='none'">
+                                <span>日本語</span>
+                            </div>
+                            <div onclick="selectLanguage('ko', 'KO', 'Korece.png')">
+                                <img src="Korece.png" alt="KO" class="flag-icon" onerror="this.style.display='none'">
+                                <span>한국어</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <a href="/demo.html" class="btn btn-secondary">🎮 Demo</a>
-                <a href="/login.html" class="btn btn-primary">Login</a>
+                <a href="/login.html" class="btn btn-primary">Giriş Yap</a>
             </div>
+            
+            <button class="mobile-menu-toggle">☰</button>
         </nav>
     </header>
 
     <section class="hero">
         <div class="hero-container">
-            <img src="logo.png" alt="Alliance HQ Logo" class="hero-logo" onerror="this.style.display='none'">
-            <h1>Alliance HQ</h1>
-            <p class="hero-subtitle">Gaming Alliance Communication Platform</p>
-            <p class="hero-description">
-                Break down language barriers in your gaming alliance. Real-time auto-translation, private alliance spaces, and smart communication tools designed for mobile strategy games.
+            <img src="logo.png" alt="Alliance HQ Logo" class="hero-logo fade-in-up" onerror="this.style.display='none'">
+            <h1 class="fade-in-up">Alliance HQ</h1>
+            <p class="hero-subtitle fade-in-up">Oyun İttifakı İletişim Platformu</p>
+            <p class="hero-description fade-in-up">
+                Oyun ittifakınızdaki dil engellerini kaldırın. Gerçek zamanlı otomatik çeviri, özel ittifak alanları ve mobil strateji oyunları için tasarlanmış akıllı iletişim araçları.
             </p>
             
-            <div class="hero-actions">
-                <a href="/demo.html" class="btn btn-primary btn-hero">🎮 Try Demo</a>
-                <a href="/register.html" class="btn btn-secondary btn-hero">📝 Register</a>
+            <div class="hero-actions fade-in-up">
+                <a href="/demo.html" class="btn btn-primary btn-hero">🎮 Demo Deneyin</a>
+                <a href="/register.html" class="btn btn-secondary btn-hero">📝 Kayıt Olun</a>
             </div>
         </div>
     </section>
 
-    <section class="features">
-        <div class="features-container">
-            <h2>Powerful Features</h2>
+    <section class="section" id="about">
+        <div class="section-container">
+            <div class="section-header scroll-animate">
+                <h2 class="section-title">Güçlü Özellikler</h2>
+                <p class="section-subtitle">
+                    Oyun ittifakınızı yönetmek ve üyelerinizle iletişim kurmak için ihtiyacınız olan her şey.
+                </p>
+            </div>
+            
             <div class="features-grid">
-                <div class="feature-card">
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">🌍</div>
-                    <h3 class="feature-title">10 Languages</h3>
-                    <p>Real-time auto-translation for seamless global communication</p>
+                    <h3 class="feature-title">Gerçek Zamanlı Çeviri</h3>
+                    <p class="feature-description">
+                        Kendi dilinizde konuşun, diğerleri kendi dillerinde okusun. Sorunsuz küresel ittifak koordinasyonu için otomatik çeviri.
+                    </p>
                 </div>
-                <div class="feature-card">
+                
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">🔒</div>
-                    <h3 class="feature-title">Private Channels</h3>
-                    <p>Secure R4 channels with access code protection</p>
+                    <h3 class="feature-title">Özel İttifak Alanları</h3>
+                    <p class="feature-description">
+                        Rol tabanlı izinlerle ittifakınız için güvenli kanallar. Liderler, subaylar ve üyeler uygun erişime sahip.
+                    </p>
                 </div>
-                <div class="feature-card">
+                
+                <div class="feature-card scroll-animate">
                     <div class="feature-icon">📱</div>
-                    <h3 class="feature-title">Mobile Optimized</h3>
-                    <p>Perfect for mobile strategy games and on-the-go management</p>
+                    <h3 class="feature-title">Mobil Optimize</h3>
+                    <p class="feature-description">
+                        Özellikle mobil strateji oyuncuları için tasarlandı. Telefon, tablet ve masaüstü bilgisayarlarda mükemmel çalışır.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section stats-section">
+        <div class="section-container">
+            <div class="stats-grid">
+                <div class="stat-item scroll-animate">
+                    <div class="stat-number">1,200+</div>
+                    <div class="stat-label">Aktif İttifak</div>
+                </div>
+                <div class="stat-item scroll-animate">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Desteklenen Dil</div>
+                </div>
+                <div class="stat-item scroll-animate">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Günlük Mesaj</div>
+                </div>
+                <div class="stat-item scroll-animate">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Çalışma Süresi</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section cta-section" id="contact">
+        <div class="section-container">
+            <div class="cta-content scroll-animate">
+                <h2 class="cta-title">İttifakınızı Birleştirmeye Hazır mısınız?</h2>
+                <p class="cta-description">
+                    Sorunsuz iletişim için Alliance HQ kullanan binlerce oyun ittifakına katılın.
+                </p>
+                <div class="hero-actions">
+                    <a href="/register.html" class="btn btn-primary btn-hero">İttifak Oluştur</a>
+                    <a href="/demo.html" class="btn btn-secondary btn-hero">Demo Deneyin</a>
                 </div>
             </div>
         </div>
     </section>
 
     <footer class="footer">
-        <p>&copy; 2026 Alliance HQ. Gaming Alliance Communication Platform.</p>
-        <p style="margin-top: 1rem; opacity: 0.7;">
-            🚀 Status: <strong>ONLINE</strong> | 
-            🗄️ Database: <strong>CONNECTED</strong> | 
-            🌐 Server: <strong>Render.com</strong>
-        </p>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Alliance HQ</h3>
+                    <p>Alliance HQ oyun ittifaklarındaki dil engellerini kaldırır. Gerçek zamanlı çeviri, güvenli iletişim ve mobil strateji oyunları için akıllı araçlar.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Özellikler</h3>
+                    <p>Otomatik Çeviri • Özel Alanlar • Gerçek Zamanlı Sohbet • Akıllı Oylama • Mobil Optimize • 10 Dil</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Mükemmel Uyum</h3>
+                    <p>Mobil Strateji Oyunları • Lords Mobile • Rise of Kingdoms • State of Survival • Herhangi Bir İttifak Tabanlı Oyun</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Alliance HQ. Tüm hakları saklıdır. Oyun İttifakı İletişim Platformu.</p>
+                <p style="margin-top: 1rem; opacity: 0.7;">
+                    🚀 Durum: <strong>ONLINE</strong> | 
+                    🗄️ Veritabanı: <strong>BAĞLI</strong> | 
+                    🌐 Sunucu: <strong>Render.com</strong>
+                </p>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        function toggleLanguageSelector() {
+            const selector = document.getElementById('languageSelector');
+            selector.classList.toggle('active');
+        }
+
+        function selectLanguage(code, name, flag) {
+            document.getElementById('selectedLang').textContent = name;
+            document.getElementById('selectedFlag').src = flag;
+            document.getElementById('languageSelector').classList.remove('active');
+        }
+
+        // Close language selector when clicking outside
+        document.addEventListener('click', function(event) {
+            const selector = document.getElementById('languageSelector');
+            if (!selector.contains(event.target)) {
+                selector.classList.remove('active');
+            }
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>`);
 });
