@@ -601,7 +601,7 @@ router.put('/profile', auth, upload.single('profileImage'), async (req, res) => 
     if (req.file) {
       // Delete old profile image if exists
       if (user.profileImage) {
-        const oldImagePath = path.join(__dirname, '../../public', user.profileImage);
+        const oldImagePath = path.join(__dirname, '../public', user.profileImage);
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath);
         }
