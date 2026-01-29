@@ -9,10 +9,16 @@ async function connectDatabase() {
       throw new Error('MONGODB_URI environment variable not set');
     }
     
-    // Basit bağlantı denemesi
-    await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000, // 5 saniye timeout
-    });
+    // MongoDB bağlantı ayarları
+    const options = {
+      serverSelectionTimeoutMS: 10000, // 10 saniye timeout
+      socketTimeoutMS: 45000,
+      bufferMaxEntries: 0,
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    };
+    
+    await mongoose.connect(mongoUri, options);
     console.log('🎮 MongoDB connected - Alliance HQ');
   } catch (error) {
     console.log('⚠️ MongoDB connection error:', error.message);
