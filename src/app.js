@@ -611,7 +611,7 @@ app.get('/', (req, res) => {
                         </div>
                     </div>
                 </div>
-                <a href="/demo.html" class="btn btn-secondary">🎮 Demo</a>
+                <a href="/register.html" class="btn btn-secondary">📝 Kayıt Ol</a>
                 <a href="/login.html" class="btn btn-primary">Giriş Yap</a>
             </div>
             
@@ -629,8 +629,8 @@ app.get('/', (req, res) => {
             </p>
             
             <div class="hero-actions fade-in-up">
-                <a href="/demo.html" class="btn btn-primary btn-hero">🎮 Demo Deneyin</a>
-                <a href="/register.html" class="btn btn-secondary btn-hero">📝 Kayıt Olun</a>
+                <a href="/register.html" class="btn btn-primary btn-hero">🎮 İttifak Oluştur</a>
+                <a href="/login.html" class="btn btn-secondary btn-hero">🔑 Giriş Yap</a>
             </div>
         </div>
     </section>
@@ -704,7 +704,7 @@ app.get('/', (req, res) => {
                 </p>
                 <div class="hero-actions">
                     <a href="/register.html" class="btn btn-primary btn-hero">İttifak Oluştur</a>
-                    <a href="/demo.html" class="btn btn-secondary btn-hero">Demo Deneyin</a>
+                    <a href="/login.html" class="btn btn-secondary btn-hero">Giriş Yap</a>
                 </div>
             </div>
         </div>
@@ -782,8 +782,26 @@ app.get('/', (req, res) => {
 </html>`);
 });
 
-// Demo sayfası
+// WOLF REGION FORCE ittifak sayfası
+app.get('/wolf.html', (req, res) => {
+  const fs = require('fs');
+  let wolfPath = path.join(__dirname, 'public/wolf.html');
+  
+  if (!fs.existsSync(wolfPath)) {
+    wolfPath = path.join(__dirname, '../public/wolf.html');
+  }
+  
+  if (fs.existsSync(wolfPath)) {
+    res.sendFile(wolfPath);
+  } else {
+    res.redirect('/');
+  }
+});
+
+// Demo sayfası - WOLF sayfasına yönlendir
 app.get('/demo.html', (req, res) => {
+  res.redirect('/wolf.html');
+});
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`<!DOCTYPE html>
 <html lang="en">
