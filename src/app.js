@@ -26,7 +26,11 @@ const io = socketIo(server, {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Static files - multiple paths for Railway compatibility
 app.use(express.static(path.join(__dirname, '../public')));
+app.use('/public', express.static(path.join(__dirname, '../public')));
+app.use(express.static('public'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -85,11 +89,18 @@ app.get('/api', (req, res) => {
 app.get('/api/debug', (req, res) => {
   const fs = require('fs');
   try {
-    const publicFiles = fs.readdirSync(path.join(__dirname, '../public'));
+    const rootFiles = fs.readdirSync('/app');
+    const publicFiles = fs.existsSync('/app/public') ? fs.readdirSync('/app/public') : ['public directory not found'];
+    const srcFiles = fs.existsSync('/app/src') ? fs.readdirSync('/app/src') : ['src directory not found'];
+    
     res.json({
-      publicDir: path.join(__dirname, '../public'),
+      workingDirectory: process.cwd(),
+      rootFiles: rootFiles,
       publicFiles: publicFiles,
-      indexExists: fs.existsSync(path.join(__dirname, '../public/index.html'))
+      srcFiles: srcFiles,
+      publicPath: path.join(__dirname, '../public'),
+      indexExists: fs.existsSync(path.join(__dirname, '../public/index.html')),
+      indexExistsAbsolute: fs.existsSync('/app/public/index.html')
     });
   } catch (error) {
     res.json({ error: error.message });
