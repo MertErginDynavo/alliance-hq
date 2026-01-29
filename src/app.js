@@ -77,6 +77,21 @@ app.get('/api', (req, res) => {
   });
 });
 
+// Debug endpoint - dosya yapısını kontrol et
+app.get('/api/debug', (req, res) => {
+  const fs = require('fs');
+  try {
+    const publicFiles = fs.readdirSync(path.join(__dirname, '../public'));
+    res.json({
+      publicDir: path.join(__dirname, '../public'),
+      publicFiles: publicFiles,
+      indexExists: fs.existsSync(path.join(__dirname, '../public/index.html'))
+    });
+  } catch (error) {
+    res.json({ error: error.message });
+  }
+});
+
 // 404 handler - must be after all other routes
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
