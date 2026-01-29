@@ -24,12 +24,98 @@ const io = socketIo(server, {
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Compression middleware for better performance
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
 
 // Static files - src/public path for deployment platforms
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// PNG files fallback - serve SVG versions when PNG files are not found
+app.get('/:filename.png', (req, res) => {
+  const fileName = req.params.filename + '.png';
+  
+  console.log(`PNG request for: ${fileName}`);
+  
+  // Logo ve bayrak dosyaları için SVG fallback
+  const fallbackImages = {
+    'logo.png': `<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="120" height="120" rx="8" fill="#000000"/>
+      <text x="60" y="70" font-family="Arial" font-size="48" font-weight="bold" fill="white" text-anchor="middle">AH</text>
+    </svg>`,
+    'türkçe.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="18" fill="#E30A13"/>
+      <circle cx="8" cy="9" r="3" fill="white"/>
+      <circle cx="8" cy="9" r="2" fill="#E30A13"/>
+      <polygon points="11,7 13,9 11,11" fill="white"/>
+    </svg>`,
+    'İngilizce.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="18" fill="#012169"/>
+      <path d="M0 0 L24 0 L24 18 L0 18 Z" fill="#012169"/>
+      <path d="M0 0 L24 18 M24 0 L0 18" stroke="white" stroke-width="2"/>
+      <path d="M12 0 L12 18 M0 9 L24 9" stroke="white" stroke-width="3"/>
+      <path d="M12 0 L12 18 M0 9 L24 9" stroke="#C8102E" stroke-width="2"/>
+    </svg>`,
+    'Espanol.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="18" fill="#AA001B"/>
+      <rect y="4" width="24" height="10" fill="#FFC400"/>
+    </svg>`,
+    'Deutsch.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="6" fill="#000000"/>
+      <rect y="6" width="24" height="6" fill="#DD003D"/>
+      <rect y="12" width="24" height="6" fill="#FFCE00"/>
+    </svg>`,
+    'Çince.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="18" fill="#DE2910"/>
+      <polygon points="6,4 7,6 5,6" fill="#FFDE00"/>
+    </svg>`,
+    'Fransızca.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="8" height="18" fill="#002395"/>
+      <rect x="8" width="8" height="18" fill="white"/>
+      <rect x="16" width="8" height="18" fill="#ED2939"/>
+    </svg>`,
+    'Rusça.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="6" fill="white"/>
+      <rect y="6" width="24" height="6" fill="#0052B4"/>
+      <rect y="12" width="24" height="6" fill="#D32930"/>
+    </svg>`,
+    'Arapça.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="6" fill="#000000"/>
+      <rect y="6" width="24" height="6" fill="white"/>
+      <rect y="12" width="24" height="6" fill="#00723D"/>
+    </svg>`,
+    'Japonca.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="18" fill="white"/>
+      <circle cx="12" cy="9" r="4" fill="#BC002D"/>
+    </svg>`,
+    'Korece.png': `<svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="18" fill="white"/>
+      <circle cx="10" cy="9" r="3" fill="#CD212A"/>
+      <circle cx="14" cy="9" r="3" fill="#003478"/>
+    </svg>`,
+    'WLF.png': `<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="60" height="60" rx="8" fill="#1a1a1a"/>
+      <text x="30" y="38" font-family="Arial" font-size="36" font-weight="bold" fill="white" text-anchor="middle">🐺</text>
+    </svg>`
+  };
+  
+  if (fallbackImages[fileName]) {
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+    res.send(fallbackImages[fileName]);
+  } else {
+    console.log(`PNG not found: ${fileName}`);
+    res.status(404).send('Image not found');
+  }
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -66,6 +152,7 @@ socketHandler(io);
 
 // Ana sayfa - index.html'i serve et
 app.get('/', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -770,6 +857,7 @@ app.get('/', (req, res) => {
 
 // Demo sayfası
 app.get('/demo.html', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1252,6 +1340,7 @@ app.get('/demo.html', (req, res) => {
 
 // Login sayfası
 app.get('/login.html', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`<!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -1381,6 +1470,7 @@ app.get('/login.html', (req, res) => {
 
 // Register sayfası
 app.get('/register.html', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`<!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -1580,23 +1670,6 @@ app.get('/dashboard.html', (req, res) => {
     res.sendFile(dashboardPath);
   } else {
     res.redirect('/');
-  }
-});
-
-// Static assets (PNG files)
-app.get('/*.png', (req, res) => {
-  const fs = require('fs');
-  const fileName = req.params[0] + '.png';
-  let filePath = path.join(__dirname, 'public', fileName);
-  
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(__dirname, '../public', fileName);
-  }
-  
-  if (fs.existsSync(filePath)) {
-    res.sendFile(filePath);
-  } else {
-    res.status(404).send('File not found');
   }
 });
 
