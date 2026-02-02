@@ -47,9 +47,23 @@ app.get('/:filename.png', (req, res) => {
   console.log(`PNG request for: ${fileName}`);
   
   // First try to serve the actual PNG file from public directory
-  const pngPath = path.join(__dirname, 'public', fileName);
+  const possiblePaths = [
+    path.join(__dirname, 'public', fileName),
+    path.join(__dirname, '../public', fileName),
+    path.join(process.cwd(), 'public', fileName),
+    path.join(process.cwd(), 'src/public', fileName)
+  ];
   
-  if (fs.existsSync(pngPath)) {
+  let pngPath = null;
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      pngPath = testPath;
+      console.log(`Found PNG at: ${testPath}`);
+      break;
+    }
+  }
+  
+  if (pngPath) {
     console.log(`Serving real PNG: ${fileName}`);
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
@@ -168,29 +182,74 @@ socketHandler(io);
 // Ana sayfa - index.html dosyasını serve et
 app.get('/', (req, res) => {
   const fs = require('fs');
-  let indexPath = path.join(__dirname, 'public/index.html');
   
-  if (!fs.existsSync(indexPath)) {
-    indexPath = path.join(__dirname, '../public/index.html');
+  // Farklı olası yolları dene
+  const possiblePaths = [
+    path.join(__dirname, 'public/index.html'),
+    path.join(__dirname, '../public/index.html'),
+    path.join(process.cwd(), 'public/index.html'),
+    path.join(process.cwd(), 'src/public/index.html')
+  ];
+  
+  let indexPath = null;
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      indexPath = testPath;
+      console.log(`Found index.html at: ${testPath}`);
+      break;
+    }
   }
   
-  if (fs.existsSync(indexPath)) {
+  if (indexPath) {
     res.sendFile(indexPath);
   } else {
-    res.status(500).send('Ana sayfa bulunamadı');
+    console.log('Index.html not found in any of these paths:', possiblePaths);
+    // Fallback - basit HTML döndür
+    res.send(`<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alliance HQ</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        .error { color: red; margin: 20px 0; }
+        .info { color: blue; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Alliance HQ</h1>
+    <div class="error">Ana sayfa dosyası bulunamadı</div>
+    <div class="info">Dosya yolları kontrol ediliyor...</div>
+    <div class="info">Lütfen birkaç dakika bekleyin ve sayfayı yenileyin</div>
+    <p><a href="/wolf.html">WOLF İttifakına Git</a></p>
+    <p><a href="/login.html">Giriş Yap</a></p>
+    <p><a href="/register.html">Kayıt Ol</a></p>
+</body>
+</html>`);
   }
 });
 
 // WOLF REGION FORCE ittifak sayfası
 app.get('/wolf.html', (req, res) => {
   const fs = require('fs');
-  let wolfPath = path.join(__dirname, 'public/wolf.html');
   
-  if (!fs.existsSync(wolfPath)) {
-    wolfPath = path.join(__dirname, '../public/wolf.html');
+  const possiblePaths = [
+    path.join(__dirname, 'public/wolf.html'),
+    path.join(__dirname, '../public/wolf.html'),
+    path.join(process.cwd(), 'public/wolf.html'),
+    path.join(process.cwd(), 'src/public/wolf.html')
+  ];
+  
+  let wolfPath = null;
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      wolfPath = testPath;
+      break;
+    }
   }
   
-  if (fs.existsSync(wolfPath)) {
+  if (wolfPath) {
     res.sendFile(wolfPath);
   } else {
     res.redirect('/');
@@ -205,13 +264,23 @@ app.get('/demo.html', (req, res) => {
 // Login sayfası
 app.get('/login.html', (req, res) => {
   const fs = require('fs');
-  let loginPath = path.join(__dirname, 'public/login.html');
   
-  if (!fs.existsSync(loginPath)) {
-    loginPath = path.join(__dirname, '../public/login.html');
+  const possiblePaths = [
+    path.join(__dirname, 'public/login.html'),
+    path.join(__dirname, '../public/login.html'),
+    path.join(process.cwd(), 'public/login.html'),
+    path.join(process.cwd(), 'src/public/login.html')
+  ];
+  
+  let loginPath = null;
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      loginPath = testPath;
+      break;
+    }
   }
   
-  if (fs.existsSync(loginPath)) {
+  if (loginPath) {
     res.sendFile(loginPath);
   } else {
     res.status(500).send('Login sayfası bulunamadı');
@@ -221,13 +290,23 @@ app.get('/login.html', (req, res) => {
 // Register sayfası
 app.get('/register.html', (req, res) => {
   const fs = require('fs');
-  let registerPath = path.join(__dirname, 'public/register.html');
   
-  if (!fs.existsSync(registerPath)) {
-    registerPath = path.join(__dirname, '../public/register.html');
+  const possiblePaths = [
+    path.join(__dirname, 'public/register.html'),
+    path.join(__dirname, '../public/register.html'),
+    path.join(process.cwd(), 'public/register.html'),
+    path.join(process.cwd(), 'src/public/register.html')
+  ];
+  
+  let registerPath = null;
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      registerPath = testPath;
+      break;
+    }
   }
   
-  if (fs.existsSync(registerPath)) {
+  if (registerPath) {
     res.sendFile(registerPath);
   } else {
     res.status(500).send('Register sayfası bulunamadı');
@@ -237,13 +316,23 @@ app.get('/register.html', (req, res) => {
 // Dashboard sayfası
 app.get('/dashboard.html', (req, res) => {
   const fs = require('fs');
-  let dashboardPath = path.join(__dirname, 'public/dashboard.html');
   
-  if (!fs.existsSync(dashboardPath)) {
-    dashboardPath = path.join(__dirname, '../public/dashboard.html');
+  const possiblePaths = [
+    path.join(__dirname, 'public/dashboard.html'),
+    path.join(__dirname, '../public/dashboard.html'),
+    path.join(process.cwd(), 'public/dashboard.html'),
+    path.join(process.cwd(), 'src/public/dashboard.html')
+  ];
+  
+  let dashboardPath = null;
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      dashboardPath = testPath;
+      break;
+    }
   }
   
-  if (fs.existsSync(dashboardPath)) {
+  if (dashboardPath) {
     res.sendFile(dashboardPath);
   } else {
     res.redirect('/');
@@ -271,6 +360,7 @@ app.get('/api/debug', (req, res) => {
     const rootFiles = fs.readdirSync(process.cwd());
     const srcFiles = fs.existsSync(path.join(__dirname)) ? fs.readdirSync(path.join(__dirname)) : ['src directory not found'];
     const publicFiles = fs.existsSync(path.join(__dirname, 'public')) ? fs.readdirSync(path.join(__dirname, 'public')) : ['src/public directory not found'];
+    const rootPublicFiles = fs.existsSync(path.join(process.cwd(), 'public')) ? fs.readdirSync(path.join(process.cwd(), 'public')) : ['root/public directory not found'];
     
     res.json({
       workingDirectory: process.cwd(),
@@ -278,8 +368,19 @@ app.get('/api/debug', (req, res) => {
       rootFiles: rootFiles,
       srcFiles: srcFiles,
       publicFiles: publicFiles,
-      publicPath: path.join(__dirname, 'public'),
-      indexExists: fs.existsSync(path.join(__dirname, 'public/index.html'))
+      rootPublicFiles: rootPublicFiles,
+      possiblePaths: {
+        srcPublic: path.join(__dirname, 'public'),
+        parentPublic: path.join(__dirname, '../public'),
+        rootPublic: path.join(process.cwd(), 'public'),
+        srcRootPublic: path.join(process.cwd(), 'src/public')
+      },
+      indexExists: {
+        srcPublic: fs.existsSync(path.join(__dirname, 'public/index.html')),
+        parentPublic: fs.existsSync(path.join(__dirname, '../public/index.html')),
+        rootPublic: fs.existsSync(path.join(process.cwd(), 'public/index.html')),
+        srcRootPublic: fs.existsSync(path.join(process.cwd(), 'src/public/index.html'))
+      }
     });
   } catch (error) {
     res.json({ error: error.message });
