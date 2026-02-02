@@ -1,11 +1,10 @@
 [build]
-  command = "npm run build"
+  command = "npm install"
   functions = "netlify/functions"
   publish = "public"
 
 [build.environment]
-  NODE_ENV = "production"
-  JWT_SECRET = "alliance-hq-super-secure-jwt-secret-key-2024-netlify"
+  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/api/*"
