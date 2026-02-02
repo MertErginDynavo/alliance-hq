@@ -39,6 +39,18 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+// Root public directory için de static serving ekle
+if (require('fs').existsSync(path.join(process.cwd(), 'public'))) {
+  app.use(express.static(path.join(process.cwd(), 'public')));
+  console.log('✅ Root public directory found and served');
+}
+
+// Src public directory için de static serving ekle
+if (require('fs').existsSync(path.join(process.cwd(), 'src/public'))) {
+  app.use(express.static(path.join(process.cwd(), 'src/public')));
+  console.log('✅ Src/public directory found and served');
+}
+
 // PNG files fallback - serve SVG versions when PNG files are not found
 app.get('/:filename.png', (req, res) => {
   const fileName = req.params.filename + '.png';
@@ -179,55 +191,93 @@ app.use('/api/seasons', seasonRoutes);
 // Socket.IO handler
 socketHandler(io);
 
-// Ana sayfa - index.html dosyasını serve et
+// Ana sayfa - static serving ile otomatik olarak index.html serve edilecek
+// Eğer static serving çalışmazsa fallback
 app.get('/', (req, res) => {
-  const fs = require('fs');
-  
-  // Farklı olası yolları dene
-  const possiblePaths = [
-    path.join(__dirname, 'public/index.html'),
-    path.join(__dirname, '../public/index.html'),
-    path.join(process.cwd(), 'public/index.html'),
-    path.join(process.cwd(), 'src/public/index.html')
-  ];
-  
-  let indexPath = null;
-  for (const testPath of possiblePaths) {
-    if (fs.existsSync(testPath)) {
-      indexPath = testPath;
-      console.log(`Found index.html at: ${testPath}`);
-      break;
-    }
-  }
-  
-  if (indexPath) {
-    res.sendFile(indexPath);
-  } else {
-    console.log('Index.html not found in any of these paths:', possiblePaths);
-    // Fallback - basit HTML döndür
-    res.send(`<!DOCTYPE html>
+  // Static serving çalışmazsa basit bir sayfa döndür
+  res.send(`<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alliance HQ</title>
+    <title>Alliance HQ - Oyun İttifakı İletişim Platformu</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        .error { color: red; margin: 20px 0; }
-        .info { color: blue; margin: 10px 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 2rem;
+        }
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 1rem 2rem;
+            background: white;
+            color: black;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        .btn-secondary:hover {
+            background: white;
+            color: black;
+        }
     </style>
 </head>
 <body>
-    <h1>Alliance HQ</h1>
-    <div class="error">Ana sayfa dosyası bulunamadı</div>
-    <div class="info">Dosya yolları kontrol ediliyor...</div>
-    <div class="info">Lütfen birkaç dakika bekleyin ve sayfayı yenileyin</div>
-    <p><a href="/wolf.html">WOLF İttifakına Git</a></p>
-    <p><a href="/login.html">Giriş Yap</a></p>
-    <p><a href="/register.html">Kayıt Ol</a></p>
+    <div class="container">
+        <div class="logo">🎮</div>
+        <h1>Alliance HQ</h1>
+        <p>Oyun İttifakı İletişim Platformu</p>
+        <p>Oyun ittifakınızdaki dil engellerini kaldırın. Gerçek zamanlı otomatik çeviri ve akıllı iletişim araçları.</p>
+        
+        <div class="buttons">
+            <a href="/register.html" class="btn">📝 İttifak Oluştur</a>
+            <a href="/login.html" class="btn btn-secondary">🔑 Giriş Yap</a>
+            <a href="/wolf.html" class="btn btn-secondary">🐺 WOLF İttifakı</a>
+        </div>
+    </div>
 </body>
 </html>`);
-  }
 });
 
 // WOLF REGION FORCE ittifak sayfası
