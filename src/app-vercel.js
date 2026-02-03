@@ -1,10 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const db = require('./database/jsondb');
 require('dotenv').config();
-
-const authRoutes = require('./routes/auth-simple');
 
 const app = express();
 
@@ -26,12 +23,26 @@ app.use((req, res, next) => {
 // Database
 const databaseConnected = true;
 
-// Routes
-app.use('/api/auth', authRoutes);
-
 // Health check
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
+});
+
+// Simple auth endpoints
+app.post('/api/auth/register', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Demo kayıt başarılı - Vercel Serverless',
+    user: { username: 'demo', email: 'demo@alliance.com' }
+  });
+});
+
+app.post('/api/auth/login', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Demo giriş başarılı - Vercel Serverless',
+    user: { username: 'demo', email: 'demo@alliance.com' }
+  });
 });
 
 // API status
@@ -326,6 +337,13 @@ app.get('/register.html', (req, res) => {
             <a href="/">Ana Sayfa</a>
         </div>
     </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert('Demo kayıt sistemi - Vercel Serverless çalışıyor!');
+        });
+    </script>
 </body>
 </html>`);
 });
@@ -437,8 +455,25 @@ app.get('/login.html', (req, res) => {
             <a href="/">Ana Sayfa</a>
         </div>
     </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert('Demo giriş sistemi - Vercel Serverless çalışıyor!');
+        });
+    </script>
 </body>
 </html>`);
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: err.message,
+    platform: 'Vercel Serverless'
+  });
 });
 
 // 404 handler
