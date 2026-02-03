@@ -10,7 +10,5 @@ services:
         value: production
       - key: JWT_SECRET
         value: alliance-hq-super-secure-jwt-secret-key-2024-render
-      - key: MONGODB_URI
-        value: mongodb+srv://mertergin:Abana1905.@alliancehq.bvbpnkz.mongodb.net/alliance-hq?retryWrites=true&w=majority
       - key: SOCKET_CORS_ORIGIN
         value: https://alliance-hq.onrender.com

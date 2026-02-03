@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const User = require('../models/User');
-const Alliance = require('../models/Alliance');
+const SimpleUser = require('../models/SimpleUser');
+const SimpleAlliance = require('../models/SimpleAlliance');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -44,7 +44,7 @@ const upload = multer({
 // MongoDB bağlantısı kontrolü
 function isDatabaseAvailable() {
   try {
-    return require('mongoose').connection.readyState === 1;
+    return true; // JSON database her zaman kullanılabilir
   } catch (error) {
     return false;
   }
@@ -74,7 +74,7 @@ router.post('/register', upload.single('profileImage'), async (req, res) => {
     }
 
     // Kullanıcı kontrolü
-    const existingUser = await User.findOne({
+    const existingUser = await SimpleUser.findOne({
       $or: [{ email }, { username }]
     });
 
