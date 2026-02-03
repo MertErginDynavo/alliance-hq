@@ -15,9 +15,7 @@ async function connectDatabase() {
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
       minPoolSize: 1,
-      maxIdleTimeMS: 30000,
-      bufferCommands: false,
-      bufferMaxEntries: 0
+      maxIdleTimeMS: 30000
     };
     
     console.log('🔄 Connecting to MongoDB Atlas...');
