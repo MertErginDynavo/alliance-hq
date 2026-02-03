@@ -4,7 +4,7 @@
   "description": "Alliance HQ - Gaming alliance communication platform without language barriers",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node src/app-simple.js",
     "dev": "nodemon src/app.js",
     "test": "jest --passWithNoTests",
     "build": "echo 'Build completed - Static files ready'",
