@@ -1,6 +1,6 @@
 {
   "name": "alliance-hq",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Alliance HQ - Gaming alliance communication platform without language barriers",
   "main": "src/app.js",
   "scripts": {

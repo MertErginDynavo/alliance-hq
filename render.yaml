@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: alliance-hq
+    name: alliance-hq-mongodb
     env: node
     plan: free
     buildCommand: npm install && npm run build
