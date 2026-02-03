@@ -301,3 +301,5 @@ For support, email support@alliance-hq.com or join our Discord server.
 ---
 
 **Made with ❤️ by Kiro AI**
+
+<!-- Force redeploy: MongoDB integration active -->
