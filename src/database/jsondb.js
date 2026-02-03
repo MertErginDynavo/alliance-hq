@@ -3,8 +3,19 @@ const path = require('path');
 
 class JsonDatabase {
   constructor() {
-    this.dataDir = path.join(__dirname, 'data');
-    this.ensureDataDirectory();
+    this.data = {
+      users: [],
+      alliances: [],
+      messages: [],
+      polls: [],
+      seasons: []
+    };
+    this.isMemoryMode = process.env.VERCEL || process.env.NODE_ENV === 'production';
+    
+    if (!this.isMemoryMode) {
+      this.dataDir = path.join(__dirname, 'data');
+      this.ensureDataDirectory();
+    }
   }
 
   ensureDataDirectory() {
@@ -20,6 +31,10 @@ class JsonDatabase {
   // Koleksiyon okuma
   read(collection) {
     try {
+      if (this.isMemoryMode) {
+        return this.data[collection] || [];
+      }
+      
       const filePath = this.getFilePath(collection);
       if (!fs.existsSync(filePath)) {
         return [];
@@ -28,19 +43,26 @@ class JsonDatabase {
       return JSON.parse(data);
     } catch (error) {
       console.error(`Error reading ${collection}:`, error);
-      return [];
+      return this.data[collection] || [];
     }
   }
 
   // Koleksiyon yazma
   write(collection, data) {
     try {
+      if (this.isMemoryMode) {
+        this.data[collection] = data;
+        return true;
+      }
+      
       const filePath = this.getFilePath(collection);
       fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
       return true;
     } catch (error) {
       console.error(`Error writing ${collection}:`, error);
-      return false;
+      // Fallback to memory
+      this.data[collection] = data;
+      return true;
     }
   }
 
