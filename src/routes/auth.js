@@ -230,6 +230,63 @@ router.post('/register', upload.single('profileImage'), async (req, res) => {
       }
     }
 
+    // MongoDB yoksa demo sistemi kullan
+    if (!isDatabaseAvailable()) {
+      // Demo kullanıcı kontrolü
+      if (demoUsers[email]) {
+        return res.status(400).json({
+          success: false,
+          message: 'Bu email zaten kullanılıyor'
+        });
+      }
+
+      // Demo kullanıcı oluştur
+      const newUserId = 'demo-user-' + Date.now();
+      const newUser = {
+        id: newUserId,
+        username: username || email.split('@')[0],
+        nickname: nickname || username || email.split('@')[0],
+        email: email,
+        password: password,
+        profileImage: null,
+        preferredLanguage: preferredLanguage || 'tr',
+        gameInfo: gameInfo || {},
+        allianceServer: allianceServer,
+        alliances: [],
+        isOnline: true,
+        lastSeen: new Date()
+      };
+
+      // Demo kullanıcıyı kaydet
+      demoUsers[email] = newUser;
+
+      // Demo JWT token oluştur
+      const token = jwt.sign(
+        { userId: newUserId, isDemo: true },
+        process.env.JWT_SECRET || 'demo-secret-key',
+        { expiresIn: '7d' }
+      );
+
+      return res.status(201).json({
+        success: true,
+        message: 'Demo kayıt başarılı',
+        token,
+        isLeader: false,
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          nickname: newUser.nickname,
+          email: newUser.email,
+          profileImage: newUser.profileImage,
+          preferredLanguage: newUser.preferredLanguage,
+          gameInfo: newUser.gameInfo,
+          allianceServer: newUser.allianceServer,
+          alliances: newUser.alliances
+        }
+      });
+    }
+
+    // Normal MongoDB işlemi
     // Kullanıcı kontrolü
     const existingUser = await User.findOne({
       $or: [{ email }, { username }]
