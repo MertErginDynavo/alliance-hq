@@ -9,20 +9,37 @@ async function connectDatabase() {
       throw new Error('MONGODB_URI environment variable not set');
     }
     
-    // MongoDB bağlantı ayarları (Mongoose 7+ uyumlu)
+    // MongoDB Atlas bağlantı ayarları (Mongoose 7+ uyumlu)
     const options = {
-      serverSelectionTimeoutMS: 10000, // 10 saniye timeout
+      serverSelectionTimeoutMS: 30000, // 30 saniye timeout
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
-      minPoolSize: 1
+      minPoolSize: 1,
+      maxIdleTimeMS: 30000,
+      bufferCommands: false,
+      bufferMaxEntries: 0
     };
     
+    console.log('🔄 Connecting to MongoDB Atlas...');
     await mongoose.connect(mongoUri, options);
-    console.log('🎮 MongoDB connected - Alliance HQ');
+    console.log('✅ MongoDB Atlas connected successfully - Alliance HQ');
+    
+    // Connection event listeners
+    mongoose.connection.on('error', (err) => {
+      console.error('❌ MongoDB connection error:', err);
+    });
+    
+    mongoose.connection.on('disconnected', () => {
+      console.log('⚠️ MongoDB disconnected');
+    });
+    
+    mongoose.connection.on('reconnected', () => {
+      console.log('🔄 MongoDB reconnected');
+    });
+    
   } catch (error) {
-    console.log('⚠️ MongoDB connection error:', error.message);
-    console.log('⚠️ MongoDB not available, continuing without database (demo mode)');
-    console.log('📝 Note: Registration and login will not work without database');
+    console.error('❌ MongoDB connection failed:', error.message);
+    throw error;
   }
 }
 

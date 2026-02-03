@@ -41,9 +41,26 @@ const upload = multer({
   }
 });
 
+// MongoDB bağlantısı kontrolü
+function isDatabaseAvailable() {
+  try {
+    return require('mongoose').connection.readyState === 1;
+  } catch (error) {
+    return false;
+  }
+}
+
 // Kayıt ol
 router.post('/register', upload.single('profileImage'), async (req, res) => {
   try {
+    // Database bağlantısı kontrolü
+    if (!isDatabaseAvailable()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Veritabanı bağlantısı mevcut değil. Lütfen daha sonra tekrar deneyin.'
+      });
+    }
+
     const { username, nickname, email, password, preferredLanguage, allianceServer } = req.body;
     
     // Parse gameInfo if it's a string
@@ -90,7 +107,7 @@ router.post('/register', upload.single('profileImage'), async (req, res) => {
     // Yeni kullanıcı oluştur
     const user = new User({
       username,
-      nickname,
+      nickname: nickname || username,
       email,
       password,
       profileImage: profileImagePath,
@@ -256,7 +273,7 @@ router.post('/register', upload.single('profileImage'), async (req, res) => {
     
     res.status(500).json({
       success: false,
-      message: 'Sunucu hatası'
+      message: 'Sunucu hatası: ' + error.message
     });
   }
 });
@@ -264,6 +281,14 @@ router.post('/register', upload.single('profileImage'), async (req, res) => {
 // Giriş yap
 router.post('/login', async (req, res) => {
   try {
+    // Database bağlantısı kontrolü
+    if (!isDatabaseAvailable()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Veritabanı bağlantısı mevcut değil. Lütfen daha sonra tekrar deneyin.'
+      });
+    }
+
     const { email, password } = req.body;
 
     // Kullanıcıyı bul
@@ -331,7 +356,7 @@ router.post('/login', async (req, res) => {
     console.error('Giriş hatası:', error);
     res.status(500).json({
       success: false,
-      message: 'Sunucu hatası'
+      message: 'Sunucu hatası: ' + error.message
     });
   }
 });
