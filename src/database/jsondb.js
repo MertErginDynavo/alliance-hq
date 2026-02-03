@@ -112,9 +112,13 @@ class JsonDatabase {
     return this.read(collection).length;
   }
 
-  // Database durumu
+  // Database durumu - Cached
   getStatus() {
     try {
+      if (this._statusCache && Date.now() - this._statusCacheTime < 30000) {
+        return this._statusCache; // 30 saniye cache
+      }
+      
       const collections = ['users', 'alliances', 'messages', 'polls', 'seasons'];
       const status = {
         connected: true,
@@ -128,6 +132,8 @@ class JsonDatabase {
         status.totalRecords += count;
       });
 
+      this._statusCache = status;
+      this._statusCacheTime = Date.now();
       return status;
     } catch (error) {
       return { connected: false, error: error.message };
