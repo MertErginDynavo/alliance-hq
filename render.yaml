@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: alliance-hq-fast
+    name: alliance-hq-v3
     env: node
     plan: free
-    buildCommand: npm install --production
+    buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
     envVars:
